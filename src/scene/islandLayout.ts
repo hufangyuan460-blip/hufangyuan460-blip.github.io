@@ -13,6 +13,8 @@ export type SolidBlockType =
   | 'sprucePlanks'
   | 'oakLeaves'
   | 'spruceLeaves'
+  | 'coalOre'
+  | 'ironOre'
   | 'diamondOre'
   | 'emeraldOre'
   | 'goldOre'
@@ -35,6 +37,7 @@ export interface IslandLayout {
   creeperPos: Vec3;
   flowersRed: Vec3[];
   flowersYellow: Vec3[];
+  grassTufts: Vec3[];
   totalCulledCount: number;
   totalVisibleCount: number;
 }
@@ -170,15 +173,19 @@ export function buildIslandLayout(): IslandLayout {
         } else if (topY <= 1 && y >= -1) {
           setBlock(x, y, z, 'sand');
         } else {
-          // Stone interior & cliff walls with natural pixel ore seams
-          const oreHash = Math.abs(x * 37 + y * 19 + z * 59) % 43;
+          // Stone interior & cliff walls with classic vanilla Minecraft ore seams
+          const oreHash = Math.abs(x * 37 + y * 19 + z * 59) % 47;
           if (y >= 2 && oreHash === 3) {
             setBlock(x, y, z, 'diamondOre');
-          } else if (y >= 2 && oreHash === 11) {
+          } else if (y >= 2 && oreHash === 9) {
+            setBlock(x, y, z, 'coalOre');
+          } else if (y >= 1 && oreHash === 16) {
+            setBlock(x, y, z, 'ironOre');
+          } else if (y >= 2 && oreHash === 23) {
             setBlock(x, y, z, 'emeraldOre');
-          } else if (y >= 1 && oreHash === 21) {
-            setBlock(x, y, z, 'goldOre');
           } else if (y >= 1 && oreHash === 31) {
+            setBlock(x, y, z, 'goldOre');
+          } else if (y >= 1 && oreHash === 39) {
             setBlock(x, y, z, 'redstoneOre');
           } else {
             setBlock(x, y, z, 'stone');
@@ -188,15 +195,16 @@ export function buildIslandLayout(): IslandLayout {
     }
   }
 
-  // Guarantee crisp visible pixel ores on the front-facing rocky mountain cliff!
+  // Guarantee crisp visible vanilla ores (Coal, Iron, Gold, Diamond + Emerald) on the mountain cliff!
   const cliffShowcaseOres: Array<{ pos: Vec3; type: SolidBlockType }> = [
     { pos: [4, 5, -1], type: 'diamondOre' },
-    { pos: [5, 6, -1], type: 'diamondOre' },
-    { pos: [3, 4, -2], type: 'emeraldOre' },
-    { pos: [9, 4, -2], type: 'goldOre' },
-    { pos: [6, 8, -2], type: 'redstoneOre' },
-    { pos: [2, 6, -3], type: 'goldOre' },
-    { pos: [8, 5, -1], type: 'emeraldOre' },
+    { pos: [5, 6, -1], type: 'goldOre' },
+    { pos: [3, 4, -2], type: 'ironOre' },
+    { pos: [9, 4, -2], type: 'coalOre' },
+    { pos: [6, 8, -2], type: 'coalOre' },
+    { pos: [2, 6, -3], type: 'ironOre' },
+    { pos: [8, 5, -1], type: 'diamondOre' },
+    { pos: [5, 8, -3], type: 'emeraldOre' },
   ];
   for (const ore of cliffShowcaseOres) {
     const [ox, oy, oz] = ore.pos;
@@ -376,10 +384,11 @@ export function buildIslandLayout(): IslandLayout {
   const portalCoreCenter: Vec3 = [-5.5, 9.0, -6.0];
   const portalCoreSize: [number, number] = [2.0, 3.0];
 
-  // === 7. VARIED OAK & SPRUCE TREES (6 TREES) ===
+  // === 7. VARIED OAK & SPRUCE TREES (Trunks extend 1-2 blocks into Fancy Leaf canopies) ===
   const placeOakTree = (tx: number, tz: number, trunkHeight: number) => {
     const baseY = heightMap.get(`${tx},${tz}`);
     if (baseY === undefined || baseY < 2) return;
+    // Trunk rises all the way up inside the lower 2 layers of the canopy so logs peek through cutouts!
     for (let y = 1; y <= trunkHeight; y++) {
       setBlock(tx, baseY + y, tz, 'oakLog');
     }
@@ -407,10 +416,10 @@ export function buildIslandLayout(): IslandLayout {
   const placeSpruceTree = (tx: number, tz: number, trunkHeight: number) => {
     const baseY = heightMap.get(`${tx},${tz}`);
     if (baseY === undefined || baseY < 2) return;
+    // Tall spruce trunk runs cleanly up through the pine tiers, visible through cutout leaves
     for (let y = 1; y <= trunkHeight; y++) {
       setBlock(tx, baseY + y, tz, 'spruceLog');
     }
-    // Conical layered spruce pine needles
     const layers = [
       { dy: 2, r: 2 },
       { dy: 3, r: 2 },
@@ -479,17 +488,17 @@ export function buildIslandLayout(): IslandLayout {
       }
     }
 
-    // Offset lone oak tree on the grassy eastern mound
+    // Offset lone oak tree on the grassy eastern mound (trunk reaches 2 blocks into canopy!)
     const tx = cx + 1;
     const tz = cz - 1;
     const base = 2;
-    for (let y = 1; y <= 4; y++) setBlock(tx, base + y, tz, 'oakLog');
-    for (let dy = 3; dy <= 5; dy++) {
-      const r = dy === 5 ? 1 : 2;
+    for (let y = 1; y <= 5; y++) setBlock(tx, base + y, tz, 'oakLog');
+    for (let dy = 4; dy <= 6; dy++) {
+      const r = dy === 6 ? 1 : 2;
       for (let dx = -r; dx <= r; dx++) {
         for (let dz = -r; dz <= r; dz++) {
           if (Math.abs(dx) === 2 && Math.abs(dz) === 2 && (dx + dz) % 2 === 0) continue;
-          if (dx === 0 && dz === 0 && dy <= 4) continue;
+          if (dx === 0 && dz === 0 && dy <= 5) continue;
           setBlock(tx + dx, base + dy, tz + dz, 'oakLeaves');
         }
       }
@@ -576,9 +585,11 @@ export function buildIslandLayout(): IslandLayout {
   buildRightTreeCay(34, -26);
   buildLeftSeaStackReef();
 
-  // === 9. WILDFLOWERS ON MEADOW GRASS ===
+  // === 9. WILDFLOWERS & MEADOW GRASS TUFTS (Crossed Planes) ===
   const flowersRed: Vec3[] = [];
   const flowersYellow: Vec3[] = [];
+  const grassTufts: Vec3[] = [];
+  const flowerOccupied = new Set<string>();
   const flowerSpots: Array<[number, number, 'red' | 'yellow']> = [
     [-8, 7, 'red'],
     [-7, 8, 'yellow'],
@@ -598,8 +609,26 @@ export function buildIslandLayout(): IslandLayout {
   for (const [fx, fz, color] of flowerSpots) {
     const fy = heightMap.get(`${fx},${fz}`);
     if (fy !== undefined && getBlock(fx, fy, fz) === 'grass' && !getBlock(fx, fy + 1, fz)) {
+      flowerOccupied.add(`${fx},${fz}`);
       if (color === 'red') flowersRed.push([fx, fy + 0.5, fz]);
       else flowersYellow.push([fx, fy + 0.5, fz]);
+    }
+  }
+
+  // Scatter natural crossed-plane grass tufts on open meadow grass blocks (avoiding Creeper & path)
+  for (let x = -12; x <= 12; x++) {
+    for (let z = -12; z <= 10; z++) {
+      if (flowerOccupied.has(`${x},${z}`)) continue;
+      if (Math.hypot(x - 1, z - 5) < 2.2) continue; // Keep Creeper clear
+      const fy = heightMap.get(`${x},${z}`);
+      if (
+        fy !== undefined &&
+        getBlock(x, fy, z) === 'grass' &&
+        !getBlock(x, fy + 1, z) &&
+        hash2D(x * 7 + 13, z * 11 - 5) > 0.84
+      ) {
+        grassTufts.push([x, fy + 0.5, z]);
+      }
     }
   }
 
@@ -627,6 +656,8 @@ export function buildIslandLayout(): IslandLayout {
     sprucePlanks: [],
     oakLeaves: [],
     spruceLeaves: [],
+    coalOre: [],
+    ironOre: [],
     diamondOre: [],
     emeraldOre: [],
     goldOre: [],
@@ -697,6 +728,7 @@ export function buildIslandLayout(): IslandLayout {
     creeperPos,
     flowersRed,
     flowersYellow,
+    grassTufts,
     totalCulledCount,
     totalVisibleCount,
   };

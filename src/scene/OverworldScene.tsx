@@ -24,6 +24,40 @@ interface CloudCluster {
   phase: number;
 }
 
+function createCrossedPlanesGeometry(width = 0.86, height = 0.86): THREE.BufferGeometry {
+  // Classic Minecraft X-shaped crossed quads with upward normals for clean even shading
+  const hw = (width * 0.5) / Math.SQRT2;
+  const positions = new Float32Array([
+    // Plane 1 (-45 deg diagonal)
+    -hw, 0, -hw,
+    hw, 0, hw,
+    hw, height, hw,
+    -hw, 0, -hw,
+    hw, height, hw,
+    -hw, height, -hw,
+    // Plane 2 (+45 deg diagonal)
+    -hw, 0, hw,
+    hw, 0, -hw,
+    hw, height, -hw,
+    -hw, 0, hw,
+    hw, height, -hw,
+    -hw, height, hw,
+  ]);
+  const normals = new Float32Array([
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+  ]);
+  const uvs = new Float32Array([
+    0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1,
+    0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1,
+  ]);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+  geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  return geo;
+}
+
 function createInstancedBlocks(
   positions: Vec3[],
   geometry: THREE.BoxGeometry,
@@ -186,8 +220,8 @@ export function OverworldScene() {
     };
     controls.addEventListener('start', onControlStart);
 
-    // === MATERIALS (MAX ANISOTROPY), SKY DOME, SUN/MOON RIG & CIRCULAR OCEAN ===
-    const materials = createVoxelMaterialPack(renderer.capabilities.getMaxAnisotropy());
+    // === MATERIALS (16x16 NearestFilter VANILLA PIXEL ART), SKY DOME, SUN/MOON & CIRCULAR OCEAN ===
+    const materials = createVoxelMaterialPack();
 
     const sky = createSkySystem({
       sunTexture: materials.sunTexture,
@@ -200,13 +234,13 @@ export function OverworldScene() {
     const ocean = createOceanSystem();
     scene.add(ocean.mesh);
 
-    // === LUMINOUS DAY / NIGHT LIGHTING RIG ===
-    const hemiLight = new THREE.HemisphereLight('#dcf3ff', '#74a096', 1.14);
+    // === LUMINOUS VANILLA-MC DAY / NIGHT LIGHTING RIG (Top brightest, clear side value steps) ===
+    const hemiLight = new THREE.HemisphereLight('#e0f4ff', '#6b948a', 1.1);
     scene.add(hemiLight);
 
-    // Subtle front-right sea-reflection bounce fill so cottage facade, pier & foliage never crush to black
-    const fillLight = new THREE.DirectionalLight('#daf2ff', 0.56);
-    fillLight.position.set(22, 16, 26);
+    // Restrained front-right sea-reflection bounce fill: keeps shaded faces readable without flattening 3D contrast
+    const fillLight = new THREE.DirectionalLight('#daf2ff', 0.44);
+    fillLight.position.set(22, 14, 26);
     scene.add(fillLight);
 
     const sunLight = new THREE.DirectionalLight('#fff7e6', 1.9);
@@ -258,6 +292,8 @@ export function OverworldScene() {
       sprucePlanks: materials.sprucePlanks,
       oakLeaves: materials.oakLeaves,
       spruceLeaves: materials.spruceLeaves,
+      coalOre: materials.coalOre,
+      ironOre: materials.ironOre,
       diamondOre: materials.diamondOre,
       emeraldOre: materials.emeraldOre,
       goldOre: materials.goldOre,
@@ -280,6 +316,12 @@ export function OverworldScene() {
         !isWater,
         true,
       );
+      // Attach alpha-cutout depth materials to Fancy Leaves so they cast dappled shadows
+      if (type === 'oakLeaves') {
+        mesh.customDepthMaterial = materials.oakLeavesDepth;
+      } else if (type === 'spruceLeaves') {
+        mesh.customDepthMaterial = materials.spruceLeavesDepth;
+      }
       instancedByType[type] = mesh;
       worldGroup.add(mesh);
     });
@@ -293,53 +335,60 @@ export function OverworldScene() {
       }
     });
 
-    // === WILDFLOWERS (RED POPPIES & YELLOW DANDELIONS) ===
-    const allFlowers = [...layout.flowersRed, ...layout.flowersYellow];
-    const stemGeo = new THREE.BoxGeometry(0.12, 0.42, 0.12);
-    const petalGeo = new THREE.BoxGeometry(0.32, 0.22, 0.32);
-
-    const stemMesh = new THREE.InstancedMesh(stemGeo, materials.flowerStem, Math.max(allFlowers.length, 1));
-    const redPetalMesh = new THREE.InstancedMesh(
-      petalGeo,
-      materials.flowerRed,
+    // === CROSSED-PLANE PIXEL FLORA (Poppies, Dandelions & Meadow Grass Tufts) ===
+    const crossedFloraGeo = createCrossedPlanesGeometry(0.84, 0.84);
+    const poppyMesh = new THREE.InstancedMesh(
+      crossedFloraGeo,
+      materials.flowerPoppy,
       Math.max(layout.flowersRed.length, 1),
     );
-    const yellowPetalMesh = new THREE.InstancedMesh(
-      petalGeo,
-      materials.flowerYellow,
+    const dandelionMesh = new THREE.InstancedMesh(
+      crossedFloraGeo,
+      materials.flowerDandelion,
       Math.max(layout.flowersYellow.length, 1),
     );
+    const grassTuftMesh = new THREE.InstancedMesh(
+      crossedFloraGeo,
+      materials.grassTuft,
+      Math.max(layout.grassTufts.length, 1),
+    );
+    poppyMesh.receiveShadow = true;
+    dandelionMesh.receiveShadow = true;
+    grassTuftMesh.receiveShadow = true;
 
     const initDummy = new THREE.Object3D();
-    allFlowers.forEach(([x, y, z], i) => {
-      initDummy.position.set(x, y + 0.21, z);
-      initDummy.rotation.set(0, i * 0.7, 0);
-      initDummy.scale.set(1, 1, 1);
-      initDummy.updateMatrix();
-      stemMesh.setMatrixAt(i, initDummy.matrix);
-    });
-    stemMesh.count = allFlowers.length;
-    stemMesh.instanceMatrix.needsUpdate = true;
-
     layout.flowersRed.forEach(([x, y, z], i) => {
-      initDummy.position.set(x, y + 0.45, z);
-      initDummy.rotation.set(0, i * 0.9, 0);
+      initDummy.position.set(x, y, z);
+      initDummy.rotation.set(0, (i * 1.1) % Math.PI, 0);
+      initDummy.scale.setScalar(0.95);
       initDummy.updateMatrix();
-      redPetalMesh.setMatrixAt(i, initDummy.matrix);
+      poppyMesh.setMatrixAt(i, initDummy.matrix);
     });
-    redPetalMesh.count = layout.flowersRed.length;
-    redPetalMesh.instanceMatrix.needsUpdate = true;
+    poppyMesh.count = layout.flowersRed.length;
+    poppyMesh.instanceMatrix.needsUpdate = true;
 
     layout.flowersYellow.forEach(([x, y, z], i) => {
-      initDummy.position.set(x, y + 0.45, z);
-      initDummy.rotation.set(0, i * 1.1, 0);
+      initDummy.position.set(x, y, z);
+      initDummy.rotation.set(0, (i * 1.3 + 0.5) % Math.PI, 0);
+      initDummy.scale.setScalar(0.92);
       initDummy.updateMatrix();
-      yellowPetalMesh.setMatrixAt(i, initDummy.matrix);
+      dandelionMesh.setMatrixAt(i, initDummy.matrix);
     });
-    yellowPetalMesh.count = layout.flowersYellow.length;
-    yellowPetalMesh.instanceMatrix.needsUpdate = true;
+    dandelionMesh.count = layout.flowersYellow.length;
+    dandelionMesh.instanceMatrix.needsUpdate = true;
 
-    worldGroup.add(stemMesh, redPetalMesh, yellowPetalMesh);
+    layout.grassTufts.forEach(([x, y, z], i) => {
+      initDummy.position.set(x, y, z);
+      initDummy.rotation.set(0, (i * 0.73) % Math.PI, 0);
+      const s = 0.82 + (i % 3) * 0.12;
+      initDummy.scale.set(s, s, s);
+      initDummy.updateMatrix();
+      grassTuftMesh.setMatrixAt(i, initDummy.matrix);
+    });
+    grassTuftMesh.count = layout.grassTufts.length;
+    grassTuftMesh.instanceMatrix.needsUpdate = true;
+
+    worldGroup.add(poppyMesh, dandelionMesh, grassTuftMesh);
 
     // === MOORED PIXEL BOAT BY THE PIER ===
     const boat = createPixelBoat(materials.oakPlanks, materials.oakLog);
@@ -821,24 +870,24 @@ export function OverworldScene() {
         .lerp(sunsetHemiSky, sunsetFactor * 0.6)
         .lerp(nightHemiSky, nightFactor);
       hemiLight.groundColor.copy(dayHemiGround).lerp(nightHemiGround, nightFactor);
-      hemiLight.intensity = THREE.MathUtils.lerp(1.14, 0.42, nightFactor);
+      hemiLight.intensity = THREE.MathUtils.lerp(1.1, 0.42, nightFactor);
 
       fillLight.color
         .copy(dayFillCol)
         .lerp(sunsetFillCol, sunsetFactor * 0.55)
         .lerp(nightFillCol, nightFactor);
-      fillLight.intensity = THREE.MathUtils.lerp(0.56, 0.18, nightFactor);
+      fillLight.intensity = THREE.MathUtils.lerp(0.44, 0.16, nightFactor);
 
-      // Night cozy warm glows (windows, lanterns, campfire, portal, subtle ore flecks)
+      // Night cozy warm glows (windows, lanterns, campfire, portal, restrained ore glint)
       const nightGlow = THREE.MathUtils.smoothstep(cycleT, 0.32, 0.78);
       materials.windowGlass.emissiveIntensity = THREE.MathUtils.lerp(0.05, 1.35, nightGlow);
-      materials.lantern.emissiveIntensity = THREE.MathUtils.lerp(0.3, 1.45, nightGlow);
+      materials.lantern.emissiveIntensity = THREE.MathUtils.lerp(0.32, 1.45, nightGlow);
 
-      const oreGlow = THREE.MathUtils.lerp(0.18, 0.85, nightGlow);
-      materials.diamondOre.emissiveIntensity = oreGlow;
-      materials.emeraldOre.emissiveIntensity = oreGlow;
-      materials.goldOre.emissiveIntensity = oreGlow * 0.85;
-      materials.redstoneOre.emissiveIntensity = oreGlow * 1.1;
+      // Keep subtle realistic mineral gleam on precious ores at night without neon blow-out
+      materials.diamondOre.emissiveIntensity = THREE.MathUtils.lerp(0.06, 0.28, nightGlow);
+      materials.goldOre.emissiveIntensity = THREE.MathUtils.lerp(0.04, 0.2, nightGlow);
+      materials.emeraldOre.emissiveIntensity = THREE.MathUtils.lerp(0.05, 0.24, nightGlow);
+      materials.redstoneOre.emissiveIntensity = THREE.MathUtils.lerp(0.08, 0.34, nightGlow);
 
       cottageLight.intensity = nightGlow * 4.5;
       lanternPointLights.forEach((l, i) => {
@@ -1135,8 +1184,7 @@ export function OverworldScene() {
       sky.dispose();
       ocean.dispose();
       boxGeo.dispose();
-      stemGeo.dispose();
-      petalGeo.dispose();
+      crossedFloraGeo.dispose();
       emberGeo.dispose();
       emberMat.dispose();
       smokeGeo.dispose();
