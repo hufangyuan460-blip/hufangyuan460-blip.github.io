@@ -1,14 +1,49 @@
 import { useState } from 'react';
+import { soundEngine } from '../audio/soundEngine';
 import { useWorld } from '../context/WorldContext';
 import { ACHIEVEMENTS, UI_TEXT } from '../i18n';
 import type { AchievementId } from '../worlds/types';
-import { GithubPixelIcon, GrassIcon, MoonIcon, SunIcon, TrophyIcon } from './PixelIcons';
+import {
+  GithubPixelIcon,
+  GrassIcon,
+  MoonIcon,
+  SpeakerOffIcon,
+  SpeakerOnIcon,
+  SunIcon,
+  SunriseIcon,
+  SunsetIcon,
+  TrophyIcon,
+} from './PixelIcons';
 
-const ALL_ACHIEVEMENT_IDS: AchievementId[] = ['new-world', 'creeper', 'night-owl'];
+const ALL_ACHIEVEMENT_IDS: AchievementId[] = [
+  'new-world',
+  'creeper',
+  'night-owl',
+  'beacon-master',
+  'sea-explorer',
+  'sweet-dreams',
+];
 
 export function TopBar() {
-  const { locale, toggleLocale, timeOfDay, unlockedAchievements } = useWorld();
+  const {
+    locale,
+    toggleLocale,
+    timePhase,
+    audioMuted,
+    toggleAudioMuted,
+    sailingMode,
+    focusedLandmark,
+    requestCameraFocus,
+    unlockedAchievements,
+  } = useWorld();
   const [showLog, setShowLog] = useState(false);
+
+  const renderPhaseIcon = () => {
+    if (timePhase === 'dawn') return <SunriseIcon size={14} />;
+    if (timePhase === 'dusk') return <SunsetIcon size={14} />;
+    if (timePhase === 'night') return <MoonIcon size={14} />;
+    return <SunIcon size={14} />;
+  };
 
   return (
     <header className="mc-topbar">
@@ -19,20 +54,46 @@ export function TopBar() {
             <span className="mc-world-pill__name">hufangyuan460</span>
             <span className="mc-world-pill__sub">{UI_TEXT.worldBadge[locale]}</span>
           </div>
-          <span className="mc-time-chip" title={timeOfDay}>
-            {timeOfDay === 'day' ? <SunIcon size={14} /> : <MoonIcon size={14} />}
-            <span>{timeOfDay === 'day' ? UI_TEXT.dayLabel[locale] : UI_TEXT.nightLabel[locale]}</span>
+          <span className={`mc-time-chip mc-time-chip--${timePhase}`} title={UI_TEXT.timePhases[timePhase][locale]}>
+            {renderPhaseIcon()}
+            <span>{UI_TEXT.timePhases[timePhase][locale]}</span>
           </span>
         </div>
-        <p className="mc-topbar__hint">{UI_TEXT.worldTagline[locale]}</p>
+        <p className="mc-topbar__hint">
+          {sailingMode ? UI_TEXT.sailingControlsHint[locale] : UI_TEXT.worldTagline[locale]}
+        </p>
       </div>
 
       <nav className="mc-topbar__actions" aria-label="Top navigation">
+        {(sailingMode || focusedLandmark !== null) && (
+          <button
+            type="button"
+            className="mc-stone-btn mc-stone-btn--primary"
+            onClick={() => requestCameraFocus('overview')}
+          >
+            <span>{UI_TEXT.returnOverviewBtn[locale]}</span>
+          </button>
+        )}
+
+        <button
+          type="button"
+          className={`mc-stone-btn mc-stone-btn--compact ${!audioMuted ? 'is-audio-active' : ''}`}
+          onClick={toggleAudioMuted}
+          aria-pressed={!audioMuted}
+          aria-label={audioMuted ? UI_TEXT.audioOff[locale] : UI_TEXT.audioOn[locale]}
+          title={audioMuted ? UI_TEXT.audioOff[locale] : UI_TEXT.audioOn[locale]}
+        >
+          {audioMuted ? <SpeakerOffIcon size={16} /> : <SpeakerOnIcon size={16} />}
+        </button>
+
         <div className="mc-adv-wrapper">
           <button
             type="button"
             className="mc-stone-btn mc-stone-btn--compact"
-            onClick={() => setShowLog((prev) => !prev)}
+            onClick={() => {
+              soundEngine.playUiClick();
+              setShowLog((prev) => !prev);
+            }}
             aria-expanded={showLog}
             aria-label={UI_TEXT.advancementsCount[locale]}
             title={UI_TEXT.advancementsCount[locale]}
@@ -81,6 +142,7 @@ export function TopBar() {
           href="https://github.com/hufangyuan460-blip"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => soundEngine.playUiClick()}
         >
           <GithubPixelIcon size={16} />
           <span>{UI_TEXT.githubButton[locale]}</span>

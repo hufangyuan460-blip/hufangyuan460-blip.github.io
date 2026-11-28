@@ -2,14 +2,20 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useWorld } from '../context/WorldContext';
 import { ACHIEVEMENTS, UI_TEXT } from '../i18n';
 import type { AchievementToastItem } from '../worlds/types';
-import { CreeperIcon, GrassIcon, MoonIcon } from './PixelIcons';
+import { BeaconIcon, BedIcon, BoatIcon, CreeperIcon, GrassIcon, MoonIcon } from './PixelIcons';
 
-function renderToastIcon(kind: 'grass' | 'creeper' | 'moon') {
+function renderToastIcon(kind: 'grass' | 'creeper' | 'moon' | 'beacon' | 'boat' | 'bed') {
   switch (kind) {
     case 'creeper':
       return <CreeperIcon size={28} />;
     case 'moon':
       return <MoonIcon size={28} />;
+    case 'beacon':
+      return <BeaconIcon size={28} />;
+    case 'boat':
+      return <BoatIcon size={28} />;
+    case 'bed':
+      return <BedIcon size={28} />;
     case 'grass':
     default:
       return <GrassIcon size={28} />;

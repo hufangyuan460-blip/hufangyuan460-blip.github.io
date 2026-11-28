@@ -1001,3 +1001,88 @@ dialog.mc-panel--docked {
     max-height: calc(100vh - 210px);
   }
 }
+
+/* === v0.5 Starlight Archipelago HUD Extensions === */
+.mc-time-chip--dawn {
+  color: #fed7aa;
+  border-color: rgba(251, 146, 60, 0.45);
+}
+
+.mc-time-chip--dusk {
+  color: #fdba74;
+  border-color: rgba(249, 115, 22, 0.45);
+}
+
+.mc-time-chip--night {
+  color: #bfdbfe;
+  border-color: rgba(147, 197, 253, 0.4);
+}
+
+.mc-stone-btn.is-audio-active {
+  background: #3d6b47;
+  box-shadow:
+    inset 2px 2px 0 #68a575,
+    inset -2px -3px 0 #24462c,
+    0 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+.mc-sail-dock {
+  position: fixed;
+  left: 20px;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  z-index: 22;
+}
+
+.mc-landmark-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 12px;
+  background: rgba(18, 22, 32, 0.88);
+  border: 2px solid var(--mc-border-dark);
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.14),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.52),
+    0 6px 18px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+.mc-landmark-card__title {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--mc-gold);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.75);
+}
+
+.mc-actionbar-notice {
+  padding: 5px 14px;
+  background: rgba(14, 16, 24, 0.82);
+  border: 2px solid rgba(250, 204, 21, 0.65);
+  box-shadow: 0 4px 0 #141418;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: #fef08a;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.mc-sleep-curtain {
+  position: fixed;
+  inset: 0;
+  background: #02040a;
+  pointer-events: none;
+  z-index: 90;
+  transition: opacity 90ms linear;
+}
+
+@media (max-width: 720px) {
+  .mc-sail-dock {
+    left: 12px;
+    bottom: 96px;
+  }
+}

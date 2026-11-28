@@ -2,14 +2,22 @@ import type { ComponentType, ReactNode } from 'react';
 
 export type Locale = 'zh' | 'en';
 export type TimeOfDay = 'day' | 'night';
+export type TimePhase = 'dawn' | 'day' | 'dusk' | 'night';
 export type HotbarSlotNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type WorldKind = 'hub' | 'overlay' | 'action';
+export type LandmarkTarget = 'main' | 'lighthouse' | 'workshop';
 
-export type AchievementId = 'new-world' | 'creeper' | 'night-owl';
+export type AchievementId =
+  | 'new-world'
+  | 'creeper'
+  | 'night-owl'
+  | 'beacon-master'
+  | 'sea-explorer'
+  | 'sweet-dreams';
 
 export interface AchievementDefinition {
   id: AchievementId;
-  icon: 'grass' | 'creeper' | 'moon';
+  icon: 'grass' | 'creeper' | 'moon' | 'beacon' | 'boat' | 'bed';
   title: Record<Locale, string>;
   description: Record<Locale, string>;
 }

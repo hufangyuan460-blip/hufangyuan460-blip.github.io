@@ -232,3 +232,107 @@ export function TrophyIcon({ size = 16, className }: IconProps) {
     </svg>
   );
 }
+
+export function BeaconIcon({ size = 28, className }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      shapeRendering="crispEdges"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="1" y="1" width="14" height="14" fill="#bae6fd" />
+      <rect x="2" y="2" width="12" height="12" fill="#38bdf8" />
+      <rect x="3" y="3" width="10" height="8" fill="#7dd3fc" />
+      <rect x="5" y="4" width="6" height="6" fill="#e0f2fe" />
+      <rect x="6" y="5" width="4" height="4" fill="#ffffff" />
+      <rect x="3" y="11" width="10" height="3" fill="#1e1530" />
+      <rect x="4" y="12" width="8" height="1" fill="#4c2882" />
+    </svg>
+  );
+}
+
+export function SunriseIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges" className={className} aria-hidden="true">
+      <rect x="7" y="2" width="2" height="2" fill="#fde047" />
+      <rect x="3" y="4" width="2" height="2" fill="#fb923c" />
+      <rect x="11" y="4" width="2" height="2" fill="#fb923c" />
+      <rect x="5" y="6" width="6" height="4" fill="#fbbf24" />
+      <rect x="6" y="7" width="4" height="3" fill="#fef08a" />
+      <rect x="1" y="10" width="14" height="2" fill="#f97316" />
+      <rect x="2" y="12" width="12" height="2" fill="#38bdf8" />
+    </svg>
+  );
+}
+
+export function SunsetIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges" className={className} aria-hidden="true">
+      <rect x="5" y="5" width="6" height="5" fill="#f97316" />
+      <rect x="6" y="6" width="4" height="3" fill="#fdba74" />
+      <rect x="1" y="10" width="14" height="2" fill="#c2410c" />
+      <rect x="2" y="12" width="12" height="2" fill="#1e3a8a" />
+      <rect x="11" y="2" width="2" height="2" fill="#e2e8f0" />
+    </svg>
+  );
+}
+
+export function SpeakerOnIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges" className={className} aria-hidden="true">
+      <rect x="2" y="6" width="3" height="4" fill="#e2e8f0" />
+      <rect x="5" y="4" width="2" height="8" fill="#f8fafc" />
+      <rect x="7" y="3" width="2" height="10" fill="#cbd5e1" />
+      <rect x="10" y="6" width="1" height="4" fill="#4ade80" />
+      <rect x="12" y="4" width="1" height="8" fill="#4ade80" />
+      <rect x="14" y="3" width="1" height="10" fill="#86efac" />
+    </svg>
+  );
+}
+
+export function SpeakerOffIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges" className={className} aria-hidden="true">
+      <rect x="2" y="6" width="3" height="4" fill="#94a3b8" />
+      <rect x="5" y="4" width="2" height="8" fill="#cbd5e1" />
+      <rect x="7" y="3" width="2" height="10" fill="#94a3b8" />
+      <rect x="10" y="5" width="2" height="2" fill="#f87171" />
+      <rect x="12" y="7" width="2" height="2" fill="#f87171" />
+      <rect x="10" y="9" width="2" height="2" fill="#f87171" />
+      <rect x="12" y="5" width="2" height="2" fill="#ef4444" />
+      <rect x="10" y="7" width="2" height="2" fill="#ef4444" />
+      <rect x="12" y="9" width="2" height="2" fill="#ef4444" />
+    </svg>
+  );
+}
+
+export function BoatIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges" className={className} aria-hidden="true">
+      <rect x="2" y="7" width="12" height="3" fill="#b48349" />
+      <rect x="3" y="8" width="10" height="2" fill="#8c5f2c" />
+      <rect x="4" y="10" width="8" height="2" fill="#6b4423" />
+      <rect x="5" y="5" width="2" height="3" fill="#cfa066" />
+      <rect x="1" y="12" width="14" height="2" fill="#38bdf8" />
+      <rect x="3" y="13" width="4" height="1" fill="#e0f2fe" />
+      <rect x="10" y="13" width="3" height="1" fill="#e0f2fe" />
+    </svg>
+  );
+}
+
+export function BedIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges" className={className} aria-hidden="true">
+      <rect x="1" y="6" width="5" height="4" fill="#f8fafc" />
+      <rect x="2" y="7" width="3" height="2" fill="#e2e8f0" />
+      <rect x="6" y="6" width="9" height="4" fill="#dc2626" />
+      <rect x="7" y="7" width="7" height="2" fill="#ef4444" />
+      <rect x="1" y="10" width="14" height="2" fill="#9a6b38" />
+      <rect x="1" y="12" width="2" height="2" fill="#6b4423" />
+      <rect x="13" y="12" width="2" height="2" fill="#6b4423" />
+    </svg>
+  );
+}

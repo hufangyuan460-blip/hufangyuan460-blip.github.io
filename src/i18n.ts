@@ -33,8 +33,44 @@ export const ACHIEVEMENTS: Record<AchievementId, AchievementDefinition> = {
       en: 'Night Owl',
     },
     description: {
-      zh: '切换昼夜天光，点亮浮空岛火把',
-      en: 'Switched the sky cycle and lit the island torches',
+      zh: '切换昼夜天光，点亮海岛灯笼与信标',
+      en: 'Switched the sky cycle and lit the island lanterns & beacon',
+    },
+  },
+  'beacon-master': {
+    id: 'beacon-master',
+    icon: 'beacon',
+    title: {
+      zh: '信标大师',
+      en: 'Beacon Master',
+    },
+    description: {
+      zh: '点击山巅信标方块，切换直冲云霄的光柱颜色',
+      en: 'Cycled the summit Beacon beam color into the sky',
+    },
+  },
+  'sea-explorer': {
+    id: 'sea-explorer',
+    icon: 'boat',
+    title: {
+      zh: '星海航海家',
+      en: 'Sea Explorer',
+    },
+    description: {
+      zh: '驾驭橡木小船扬帆出海，探访灯塔岛或风车工坊岛',
+      en: 'Sailed the oak boat across the sea to visit the Lighthouse or Workshop Isle',
+    },
+  },
+  'sweet-dreams': {
+    id: 'sweet-dreams',
+    icon: 'bed',
+    title: {
+      zh: '甜蜜的梦',
+      en: 'Sweet Dreams',
+    },
+    description: {
+      zh: '在星夜点击经典红床安然入眠，迎接破晓晨光',
+      en: 'Slept in the classic red bed at night and woke to dawn sunrise',
     },
   },
 };
@@ -49,8 +85,8 @@ export const UI_TEXT = {
     en: 'SAVE #001 · FRESH WORLD',
   },
   worldTagline: {
-    zh: '拖拽旋转 · 滚轮缩放 · 试试点击岛上的苦力怕',
-    en: 'Drag to orbit · Scroll to zoom · Try clicking the Creeper',
+    zh: '拖拽旋转 · 点击岛屿/小船/红床探索星海群岛',
+    en: 'Drag to orbit · Click islands, oak boat, or red bed to explore',
   },
   langToggleLabel: {
     zh: '切换语言',
@@ -85,8 +121,70 @@ export const UI_TEXT = {
     en: 'DAY',
   },
   nightLabel: {
-    zh: '星夜',
+    zh: '黑夜',
     en: 'NIGHT',
+  },
+  timePhases: {
+    dawn: { zh: '黎明', en: 'DAWN' },
+    day: { zh: '白昼', en: 'DAY' },
+    dusk: { zh: '黄昏', en: 'DUSK' },
+    night: { zh: '黑夜', en: 'NIGHT' },
+  },
+  audioOn: {
+    zh: '环境音已开启',
+    en: 'Ambient Audio On',
+  },
+  audioOff: {
+    zh: '开启海浪与音效',
+    en: 'Enable Waves & SFX',
+  },
+  setSailBtn: {
+    zh: '出海巡航',
+    en: 'Set Sail',
+  },
+  returnOverviewBtn: {
+    zh: '返回全景',
+    en: 'Overview',
+  },
+  sailingControlsHint: {
+    zh: 'W/A/S/D 掌舵 · Esc 返回全景',
+    en: 'W/A/S/D to Sail · Esc for Overview',
+  },
+  boatHint: {
+    zh: '点击橡木船 · 出海巡航',
+    en: 'Click Oak Boat · Set Sail',
+  },
+  bedHint: {
+    zh: '点击红床 · 夜间入睡',
+    en: 'Click Red Bed · Sleep at Night',
+  },
+  bedDaytimeOnly: {
+    zh: '你只能在夜间入睡',
+    en: 'You may only rest at night',
+  },
+  lighthouseName: {
+    zh: '海崖灯塔岛',
+    en: 'Cliff Lighthouse Isle',
+  },
+  lighthouseHint: {
+    zh: '点击海崖灯塔岛 · 聚焦视角',
+    en: 'Click Lighthouse Isle · Focus View',
+  },
+  openMotionLabBtn: {
+    zh: '打开动画实验室',
+    en: 'Open Motion Lab',
+  },
+  workshopName: {
+    zh: '风车工坊岛',
+    en: 'Windmill Workshop Isle',
+  },
+  workshopHint: {
+    zh: '点击风车工坊岛 · 聚焦视角',
+    en: 'Click Workshop Isle · Focus View',
+  },
+  openForgeBtn: {
+    zh: '打开 MC 主页工坊',
+    en: 'Open Profile Forge',
   },
   emptySlotName: {
     zh: '空槽位 · 留给新存档',
@@ -107,6 +205,10 @@ export const UI_TEXT = {
   creeperHint: {
     zh: '苦力怕似乎在看着你...',
     en: 'The Creeper is staring at you...',
+  },
+  beaconHint: {
+    zh: '点击信标 · 切换光柱颜色',
+    en: 'Click Beacon · Cycle Beam Color',
   },
   forge: {
     heading: {

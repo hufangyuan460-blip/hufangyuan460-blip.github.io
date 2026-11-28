@@ -14,6 +14,7 @@ export function Hotbar() {
     toggleTimeOfDay,
     emptySlotHintSlot,
     flashEmptySlot,
+    hotbarNotice,
   } = useWorld();
 
   const slots = getHotbarSlots();
@@ -85,6 +86,11 @@ export function Hotbar() {
 
   return (
     <div className="mc-hotbar-dock">
+      {hotbarNotice && (
+        <div className="mc-actionbar-notice" role="status" aria-live="polite">
+          {hotbarNotice}
+        </div>
+      )}
       <div className="mc-hotbar-caption" aria-live="polite">
         {captionText}
       </div>
